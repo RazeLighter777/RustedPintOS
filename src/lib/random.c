@@ -33,6 +33,7 @@ swap_byte (uint8_t *a, uint8_t *b)
 void
 random_init (unsigned seed)
 {
+  rust_function();
   uint8_t *seedp = (uint8_t *) &seed;
   int i;
   uint8_t j;
