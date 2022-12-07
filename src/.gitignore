@@ -2,3 +2,8 @@ cscope.files
 cscope.out
 TAGS
 tags
+target/
+.vscode/
+*.o
+lib/lib.h
+examples/libc.a

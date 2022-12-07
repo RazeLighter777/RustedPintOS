@@ -78,25 +78,24 @@ OBJECTS = $(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SOURCES)))
 #add fail.o to OBJECTS
 DEPENDS = $(patsubst %.o,%.d,$(OBJECTS))
 
-threads/kernel.lds.s: CPPFLAGS += -P
-threads/kernel.lds.s: threads/kernel.lds.S threads/loader.h
+threads/kernel.lds.s: CPPFLAGS += -P 
+threads/kernel.lds.s: threads/kernel.lds.S threads/loader.h rust
 
 rust:
 	cargo build -Z unstable-options --release
-	mkdir -p tmp 
-	cd tmp; ar x  ../$(SRCDIR)/target/x86-unknown-bare_metal/release/libfail.a
-	cbindgen -l c -o $(SRCDIR)/lib/fail.h $(SRCDIR)/lib/lib.rs --config ../../cbindgen.toml
+	cd $(SRCDIR)/target; ar x  x86-unknown-bare_metal/release/libfail.a
+	cbindgen -l c -o $(SRCDIR)/lib/lib.h $(SRCDIR)/lib/lib.rs --config ../../cbindgen.toml
 
 kernel.o: threads/kernel.lds.s $(OBJECTS)  rust
-	$(LD) --allow-multiple-definition -T $< -o $@ $(OBJECTS) tmp/*.o
+	$(LD) -T $< -o $@ $(OBJECTS) $(SRCDIR)/target/*.o
 
 kernel.bin: kernel.o
 	$(OBJCOPY) -R .note -R .comment -S $< $@
 
-threads/loader.o: threads/loader.S
+threads/loader.o: threads/loader.S rust
 	$(CC) -c $< -o $@ $(ASFLAGS) $(CPPFLAGS) $(DEFINES)
 
-loader.bin: threads/loader.o
+loader.bin: threads/loader.o rust
 	$(LD) -N -e 0 -Ttext 0x7c00 --oformat binary -o $@ $<
 
 os.dsk: kernel.bin

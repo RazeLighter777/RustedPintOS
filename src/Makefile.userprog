@@ -40,7 +40,7 @@ $(foreach prog,$(PROGS),$(eval $(call TEMPLATE,$(prog))))
 
 libc.a: $(LIB_OBJ)
 	rm -f $@
-	ar r $@ $^ tmp/*.o
+	ar r $@ $^ $(SRCDIR)/target/*.o
 	ranlib $@
 
 clean::
