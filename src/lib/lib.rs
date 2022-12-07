@@ -19,7 +19,8 @@ use core::sync::atomic::Ordering;
 /// The name **must be** `_start`, otherwise the compiler throws away all code as unused. 
 /// The name can be changed by passing a different entry symbol as linker argument.
 fn _start() -> ! {
-    loop {}
+    loop {
+    }
 }
 
 #[inline(never)]
@@ -32,6 +33,14 @@ fn panic(_info: &PanicInfo) -> ! {
 
 
 #[no_mangle]
-pub extern "C" fn rust_function() {
-
+pub extern "C" fn atoi(mut s: *const u8) -> i32 {
+    unsafe {
+        let mut n = 0;
+        while *s != 0 {
+            n = n * 10 + (*s - b'0') as i32;
+            s = s.offset(1);
+        }
+        n
+    }
+    
 }
